@@ -16,10 +16,10 @@ timezone: Australia/Brisbane
 
 title: softsoundd # the main title
 
-tagline: Mirror's Edge code enjoyer # it will display as the subtitle
+tagline: Mirror's Edge enjoyer # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
-  Mirror's Edge code enjoyer.
+  Mirror's Edge enjoyer.
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.

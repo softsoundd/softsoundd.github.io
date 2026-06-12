@@ -1,0 +1,76 @@
+{%- assign fl_scene = include.scene_id | default: 'Comparison' -%}
+{%- assign fl_caption = include.caption | default: fl_scene -%}
+
+{%- assign fl_media_subpath = page.media_subpath | default: '/assets/img/posts/faithful-luma' -%}
+
+{%- capture fl_before_url -%}
+  {%- include media-url.html src=include.before subpath=fl_media_subpath -%}
+{%- endcapture -%}
+{%- capture fl_after_url -%}
+  {%- include media-url.html src=include.after subpath=fl_media_subpath -%}
+{%- endcapture -%}
+{%- assign fl_before_url = fl_before_url | strip -%}
+{%- assign fl_after_url = fl_after_url | strip -%}
+
+<div
+  class="fl-comparison"
+  data-scene="{{ fl_scene }}"
+  data-before="{{ fl_before_url }}"
+  data-after="{{ fl_after_url }}"
+>
+  <div class="fl-comparison__header">
+    <p class="fl-comparison__caption">{{ fl_caption }}</p>
+    <p class="fl-comparison__hint">Scroll to zoom · double-click to reset</p>
+  </div>
+
+  <div class="fl-comparison__viewport" aria-label="{{ fl_caption }} before and after comparison">
+    <div class="fl-comparison__stage">
+      <div
+        class="fl-comparison__layer fl-comparison__after"
+        role="img"
+        aria-label="{{ fl_caption }} — FaithfulLuma (after)"
+      ></div>
+      <div class="fl-comparison__before-wrap">
+        <div
+          class="fl-comparison__layer fl-comparison__before"
+          role="img"
+          aria-label="{{ fl_caption }} — shipped (before)"
+        ></div>
+      </div>
+    </div>
+
+    <div class="fl-comparison__chrome" aria-hidden="false">
+      <div class="fl-comparison__divider" aria-hidden="true"></div>
+      <button
+        type="button"
+        class="fl-comparison__handle"
+        aria-label="Compare before and after for {{ fl_caption }}"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="50"
+        role="slider"
+      ></button>
+      <button
+        type="button"
+        class="fl-comparison__fullscreen"
+        aria-label="Enter fullscreen for {{ fl_caption }}"
+        title="Fullscreen"
+      >
+        <i class="fas fa-expand" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="fl-comparison__labels" aria-hidden="true">
+    <span>Before</span>
+    <span>After</span>
+  </div>
+
+  <noscript>
+    <p class="fl-comparison__fallback">
+      <a href="{{ fl_before_url }}">View before image</a>
+      ·
+      <a href="{{ fl_after_url }}">View after image</a>
+    </p>
+  </noscript>
+</div>
