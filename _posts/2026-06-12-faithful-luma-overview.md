@@ -10,7 +10,7 @@ media_subpath: /assets/img/posts/faithful-luma
 pin: true
 ---
 
-Mirror's Edge built its identity on colour. A blinding white city cut through with hard reds and oranges, all of it pushed through a 2008 era post-processing chain that decides almost everything per channel: tone mapping, auto exposure and bloom each let red, green and blue negotiate the trip from HDR to your display on their own. That works fine until something gets bright. If you haven't already noticed in this game, something is always bright.
+Mirror's Edge built its identity on colour. A blinding white city cut through with splashes of hard, dominant colours, all of it pushed through a 2008 era post-processing chain that decides almost everything per channel: tone mapping, auto exposure and bloom each let red, green and blue negotiate the trip from HDR to your display on their own. That works fine until something gets bright. If you haven't already noticed in this game, something is always bright.
 
 FaithfulLuma is a modification to that chain done through the game's existing shader files. It aims to keep the original art direction intact and moves the brightness decisions onto luminance, where they better belong, so the hue shifts and channel clipping in bright areas disappear.
 
