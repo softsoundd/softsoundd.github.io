@@ -18,7 +18,7 @@ FaithfulLuma is a modification to that chain done through the game's existing sh
 
 One channel saturates before the others and the ratios between them drift, so an orange light slides toward yellow on its way to white. Bloom has a similar problem where the pass blooms any pixel where any single channel crosses the brightness threshold, so vivid surfaces get interpreted as bright and start glowing like lamps (Chapter 6 factory railings!).
 
-The auto exposure also has its own quirks. The original model adapts incredibly slowly and sometimes just stops reaching its target which is why you might've noticed that loading maps in different orders and refocusing the game window will produce wildly different exposure levels. It also measures brightness with luminance weights from NTSC era - it's the 2020s now... FaithfulLuma replaces all three where every luminance value in the chain instead uses Rec.709 weights.
+The auto exposure also has its own quirks. The original model adapts incredibly slowly and sometimes just stops reaching its target which is why you might've noticed that loading maps in different orders and refocusing the game window will produce wildly different exposure levels. It also measures brightness with luminance weights from NTSC era. FaithfulLuma replaces all three where every luminance value in the chain instead uses Rec.709 weights.
 
 ## Summary of FaithfulLuma's changes
 
@@ -76,6 +76,9 @@ _Original and FaithfulLuma_
 ### Bloom
 
 Two checks decide what actually gets to glow. Saturated colours that are not genuinely bright get held back by comparing the pixel's luminance against its strongest channel, so a painted red wall stays a painted red wall. Hot sources get the opposite treatment: extra scatter weight that grows as they approach the HDR ceiling, up to double at the very top. Either way, the bloom keeps the source's own colour rather than washing it toward white.
+
+![Bloom - Before/After](Bloom.webp)
+_Original and FaithfulLuma_
 
 ## Visual comparisons
 
