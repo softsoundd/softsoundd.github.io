@@ -49,16 +49,19 @@ A lot of the game's look is in its per channel midtone grade, and a naive lumina
 
 One awkward thing about bringing down hot sources is that it reveals Mirror's Edge's whites are not always white. Sunlit concrete and the resulting overexposed surfaces can carry a slight yellow warmth (the sun colour in the editor is usually set to bleach white) that only really shows up once the highlight clipping is fixed. While there's nothing technically wrong about this, it can look a little odd against the cool blue colour grading feel that some of the maps go for. To keep the expected look of neutral white highlights, FaithfulLuma takes a creative decision here and looks for pixels that are both bright and close to neutral, then blends those pixels toward their own luminance.
 
+![White Correction - Before/After](3A_Whites.webp)
+_Before and after white correction_
+
 ### Black floor
 
 The other display space fix lives at the bottom end. The rendering path can write pure black just fine, the problem is that the shader output never quite gets there. After the game's gamma and colour curves, the darkest measured value sits a couple of encoded steps above zero, so the final 8-bit target records a lifted black instead of true black. This is kinda small on paper but it makes a difference in darker envrionments, especially on OLED displays.
 
-![Black Floor — before](BlackFloor_Before.webp)
+![Black Floor - before](BlackFloor_Before.webp)
 _Original - note the "min" value_
 
 FaithfulLuma corrects that floor just before the final 8-bit output and simply remaps the measured floor to true black, then rolls off quickly until the image is unchanged again by the lower midtones. Near-black colour relationships are preserved by scaling the pixel around its luminance rather than clipping each channel on its own.
 
-![Black Floor — after](BlackFloor_After.webp)
+![Black Floor - after](BlackFloor_After.webp)
 _FaithfulLuma - note the "min" value_
 
 ### Auto exposure
