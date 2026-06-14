@@ -26,6 +26,8 @@ The auto exposure also has its own quirks. The original model adapts incredibly 
 | ----------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | Tone mapping      | Each channel tone mapped<br>independently, so bright<br>saturated colours clip and<br>drift in hue | One Reinhard curve driven<br>by luminance, with RGB<br>rescaled around the result<br>so hue is stable |
 | Colour grading    | Per channel midtone grade<br>applied at every brightness                                           | Original grade kept in full<br>in shadows and lower midtones,<br>fading to neutral in highlights      |
+| White correction  | Fixing warm blown whites<br>globally would drag the<br>whole picture around                        | Only bright low chroma whites<br>are nudged neutral, with<br>brightness protected                     |
+| Black floor       | The final 8-bit image bottoms<br>out above true black                                              | A narrow rolloff maps the<br>measured floor back to<br>black and leaves the rest alone                |
 | Auto exposure     | Square root key, slow<br>adaptation speed tied to<br>frame rate                                    | Linear key, frame rate<br>independent asymmetric<br>adaptation, plus a dark<br>scene boost            |
 | Bloom             | Triggered by any single<br>channel crossing threshold,<br>so painted objects glow                  | Driven by luminance through<br>a soft knee, so only real<br>light sources bloom                       |
 | Luminance weights | NTSC era values                                                                                    | Rec.709 throughout                                                                                    |
@@ -42,6 +44,22 @@ The original colour curves still run at the end of the chain, with one small cor
 ### Colour grading
 
 A lot of the game's look is in its per channel midtone grade, and a naive luminance pipeline would flatten it into something generic. So for this reason FaithfulLuma is a bit choosy about where it neutralises. Shadows and lower midtones keep the original grade at full strength, and because the Reinhard curve is nearly a straight line down there, dark areas come out almost identical to the original game. From the midtones upward the grade fades toward a neutral luminance matched version, and it is fully neutral before the highlights begin. Bright areas stop inheriting tints they were never meant to carry and dark areas keep their intended look.
+
+## White correction
+
+One awkward thing about bringing down hot sources is that it reveals Mirror's Edge's whites are not always white. Sunlit concrete and the resulting overexposed surfaces can carry a slight yellow warmth (the sun colour in the editor is usually set to bleach white) that only really shows up once the highlight clipping is fixed. While there's nothing technically wrong about this, it can look a little odd against the cool blue colour grading feel that some of the maps go for. To keep the expected look of neutral white highlights, FaithfulLuma takes a creative decision here and looks for pixels that are both bright and close to neutral, then blends those pixels toward their own luminance.
+
+## Black floor
+
+The other display space fix lives at the bottom end. Because the final image is written into an 8-bit SDR colour buffer, the measured floor shows up as a whole code step above zero rather than a smooth analogue value. In practice, the darkest parts of the image sit slightly lifted instead of landing on true black. This is kinda tiny on paper but it matters in darker envrionments, especially on OLED displays.
+
+![Black Floor — before](BlackFloor_Before.webp)
+_Original - note the "min" value_
+
+FaithfulLuma corrects that floor just before the final 8-bit output and simply remaps the measured floor to true black, then rolls off quickly until the image is unchanged again by the lower midtones. Near-black colour relationships are preserved by scaling the pixel around its luminance rather than clipping each channel on its own.
+
+![Black Floor — after](BlackFloor_After.webp)
+_FaithfulLuma - note the "min" value_
 
 ### Auto exposure
 
