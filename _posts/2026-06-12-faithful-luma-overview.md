@@ -75,7 +75,7 @@ _Original and FaithfulLuma_
 
 ### Bloom
 
-Two checks decide what actually gets to glow. Saturated colours that are not genuinely bright get held back by comparing the pixel's luminance against its strongest channel, so a painted red wall stays a painted red wall. Hot sources get the opposite treatment: extra scatter weight that grows as they approach the HDR ceiling, up to double at the very top. Either way, the bloom keeps the source's own colour rather than washing it toward white.
+Two checks decide what actually gets to glow. Saturated colours that are not genuinely bright get held back by comparing the pixel's luminance against its strongest channel. Hot sources get the opposite treatment - extra scatter weight that grows as they approach the HDR ceiling, up to double at the very top. Either way, the bloom keeps the source's own colour rather than washing it toward white.
 
 ![Bloom - Before/After](Bloom.webp)
 _Original and FaithfulLuma_
