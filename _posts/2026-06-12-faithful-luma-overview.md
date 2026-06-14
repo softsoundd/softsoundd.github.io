@@ -26,7 +26,7 @@ The auto exposure also has its own quirks. The original model adapts incredibly 
 | ----------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | Tone mapping      | Each channel tone mapped<br>independently, so bright<br>saturated colours clip and<br>drift in hue | One Reinhard curve driven<br>by luminance, with RGB<br>rescaled around the result<br>so hue is stable |
 | Colour grading    | Per channel midtone grade<br>applied at every brightness                                           | Original grade kept in full<br>in shadows and lower midtones,<br>fading to neutral in highlights      |
-| White correction  | Fixing warm blown whites<br>globally would drag the<br>whole picture around                        | Only bright low chroma whites<br>are nudged neutral, with<br>brightness protected                     |
+| White correction  | Warm surfaces that are blown<br>out shift towards white                                            | Bright low chroma whites<br>are nudged neutral                                                        |
 | Black floor       | The final 8-bit image bottoms<br>out above true black                                              | A narrow rolloff maps the<br>measured floor back to<br>black and leaves the rest alone                |
 | Auto exposure     | Square root key, slow<br>adaptation speed tied to<br>frame rate                                    | Linear key, frame rate<br>independent asymmetric<br>adaptation, plus a dark<br>scene boost            |
 | Bloom             | Triggered by any single<br>channel crossing threshold,<br>so painted objects glow                  | Driven by luminance through<br>a soft knee, so only real<br>light sources bloom                       |
@@ -51,7 +51,7 @@ One awkward thing about bringing down hot sources is that it reveals Mirror's Ed
 
 ## Black floor
 
-The other display space fix lives at the bottom end. Because the final image is written into an 8-bit SDR colour buffer, the measured floor shows up as a whole code step above zero rather than a smooth analogue value. In practice, the darkest parts of the image sit slightly lifted instead of landing on true black. This is kinda tiny on paper but it matters in darker envrionments, especially on OLED displays.
+The other display space fix lives at the bottom end. The rendering path can write pure black just fine, the problem is that the shader output never quite gets there. After the game's gamma and colour curves, the darkest measured value sits a couple of encoded steps above zero, so the final 8-bit target records a lifted black instead of true black. This is kinda small on paper but it makes a difference in darker envrionments, especially on OLED displays.
 
 ![Black Floor — before](BlackFloor_Before.webp)
 _Original - note the "min" value_
