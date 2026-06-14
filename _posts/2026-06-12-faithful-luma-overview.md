@@ -45,11 +45,11 @@ The original colour curves still run at the end of the chain, with one small cor
 
 A lot of the game's look is in its per channel midtone grade, and a naive luminance pipeline would flatten it into something generic. So for this reason FaithfulLuma is a bit choosy about where it neutralises. Shadows and lower midtones keep the original grade at full strength, and because the Reinhard curve is nearly a straight line down there, dark areas come out almost identical to the original game. From the midtones upward the grade fades toward a neutral luminance matched version, and it is fully neutral before the highlights begin. Bright areas stop inheriting tints they were never meant to carry and dark areas keep their intended look.
 
-## White correction
+### White correction
 
 One awkward thing about bringing down hot sources is that it reveals Mirror's Edge's whites are not always white. Sunlit concrete and the resulting overexposed surfaces can carry a slight yellow warmth (the sun colour in the editor is usually set to bleach white) that only really shows up once the highlight clipping is fixed. While there's nothing technically wrong about this, it can look a little odd against the cool blue colour grading feel that some of the maps go for. To keep the expected look of neutral white highlights, FaithfulLuma takes a creative decision here and looks for pixels that are both bright and close to neutral, then blends those pixels toward their own luminance.
 
-## Black floor
+### Black floor
 
 The other display space fix lives at the bottom end. The rendering path can write pure black just fine, the problem is that the shader output never quite gets there. After the game's gamma and colour curves, the darkest measured value sits a couple of encoded steps above zero, so the final 8-bit target records a lifted black instead of true black. This is kinda small on paper but it makes a difference in darker envrionments, especially on OLED displays.
 
