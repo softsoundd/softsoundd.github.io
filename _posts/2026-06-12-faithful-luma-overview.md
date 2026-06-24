@@ -1,8 +1,8 @@
 ---
-title: FaithfulLuma - luminance-based post-processing for Mirror's Edge
+title: Faithful Luma - luminance-based post-processing for Mirror's Edge
 date: 2026-06-12 20:00:00 +1000
 categories: [Projects, Mirror's Edge]
-tags: [faithfulluma, mirrors-edge, shaders, ue3, post-processing]
+tags: [Faithful-Luma, mirrors-edge, shaders, ue3, post-processing]
 description: >-
   Adjustments to the Mirror's Edge shaders around tone mapping, auto exposure and bloom
   that aims to keep the intended look while fixing per channel clipping and hue shifts.
@@ -12,17 +12,17 @@ pin: true
 
 Mirror's Edge built its identity on colour. A blinding white city cut through with splashes of hard, dominant colours, all of it pushed through a 2008 era post-processing chain that decides almost everything per channel: tone mapping, auto exposure and bloom each let red, green and blue negotiate the trip from HDR to your display on their own. That works fine until something gets bright. If you haven't already noticed in this game, something is always bright.
 
-FaithfulLuma is a modification to that chain done through the game's existing shader files. It aims to keep the original art direction intact and moves the brightness decisions onto luminance, where they better belong, so the hue shifts and channel clipping in bright areas disappear.
+Faithful Luma is a modification to that chain done through the game's existing shader files. It aims to keep the original art direction intact and moves the brightness decisions onto luminance, where they better belong, so the hue shifts and channel clipping in bright areas disappear.
 
 ## What the original per-channel processing does to the picture
 
 One channel saturates before the others and the ratios between them drift, so an orange light slides toward yellow on its way to white. Bloom has a similar problem where the pass blooms any pixel where any single channel crosses the brightness threshold, so vivid surfaces get interpreted as bright and start glowing like lamps (Chapter 6 factory railings!).
 
-The auto exposure also has its own quirks. The original model adapts incredibly slowly and sometimes just stops reaching its target which is why you might've noticed that loading maps in different orders and refocusing the game window will produce wildly different exposure levels. It also measures brightness with luminance weights from NTSC era. FaithfulLuma replaces all three where every luminance value in the chain instead uses Rec.709 weights.
+The auto exposure also has its own quirks. The original model adapts incredibly slowly and sometimes just stops reaching its target which is why you might've noticed that loading maps in different orders and refocusing the game window will produce wildly different exposure levels. It also measures brightness with luminance weights from NTSC era. Faithful Luma replaces all three where every luminance value in the chain instead uses Rec.709 weights.
 
-## Summary of FaithfulLuma's changes
+## Summary of Faithful Luma's changes
 
-| Area              | Original game                                                                                      | FaithfulLuma                                                                                          |
+| Area              | Original game                                                                                      | Faithful Luma                                                                                          |
 | ----------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | Tone mapping      | Each channel tone mapped<br>independently, so bright<br>saturated colours clip and<br>drift in hue | One Reinhard curve driven<br>by luminance, with RGB<br>rescaled around the result<br>so hue is stable |
 | Colour grading    | Per channel midtone grade<br>applied at every brightness                                           | Original grade kept in full<br>in shadows and lower midtones,<br>fading to neutral in highlights      |
@@ -35,7 +35,7 @@ The auto exposure also has its own quirks. The original model adapts incredibly 
 
 ### Tone mapping
 
-The FaithfulLuma tone mapper runs on one number per pixel. It takes the graded HDR colour, computes its luminance, and pushes that single value through an extended Reinhard curve whose shoulder is calibrated so the engine's HDR ceiling lands exactly on display white. The RGB is then rescaled until its luminance matches the tone mapped result. Channel ratios never change, so hue holds steady from the midtones all the way up the shoulder.
+The Faithful Luma tone mapper runs on one number per pixel. It takes the graded HDR colour, computes its luminance, and pushes that single value through an extended Reinhard curve whose shoulder is calibrated so the engine's HDR ceiling lands exactly on display white. The RGB is then rescaled until its luminance matches the tone mapped result. Channel ratios never change, so hue holds steady from the midtones all the way up the shoulder.
 
 Truly hot sources still bleach toward white. That part is deliberate and worth keeping, because a sun that stays stubbornly yellow looks wrong. The difference is that the desaturation now engages well above diffuse white and ramps in smoothly, instead of arriving as a side effect of three channels hitting their ceilings at three different times.
 
@@ -43,14 +43,14 @@ The original colour curves still run at the end of the chain, with one small cor
 
 ### Colour grading
 
-A lot of the game's look is in its per channel midtone grade, and a naive luminance pipeline would flatten it into something generic. So for this reason FaithfulLuma is a bit choosy about where it neutralises. Shadows and lower midtones keep the original grade at full strength, and because the Reinhard curve is nearly a straight line down there, dark areas come out almost identical to the original game. From the midtones upward the grade fades toward a neutral luminance matched version, and it is fully neutral before the highlights begin. Bright areas stop inheriting tints they were never meant to carry and dark areas keep their intended look.
+A lot of the game's look is in its per channel midtone grade, and a naive luminance pipeline would flatten it into something generic. So for this reason Faithful Luma is a bit choosy about where it neutralises. Shadows and lower midtones keep the original grade at full strength, and because the Reinhard curve is nearly a straight line down there, dark areas come out almost identical to the original game. From the midtones upward the grade fades toward a neutral luminance matched version, and it is fully neutral before the highlights begin. Bright areas stop inheriting tints they were never meant to carry and dark areas keep their intended look.
 
 ### White correction
 
-One awkward thing about bringing down hot sources is that it reveals Mirror's Edge's whites are not always white. Sunlit concrete and the resulting overexposed surfaces can carry a slight yellow warmth (the sun colour in the editor is usually set to bleach white) that only really shows up once the highlight clipping is fixed. While there's nothing technically wrong about this, it can look a little odd against the cool blue colour grading feel that some of the maps go for. To keep the expected look of neutral white highlights, FaithfulLuma takes a creative decision here and looks for pixels that are both bright and close to neutral, then blends those pixels toward their own luminance.
+One awkward thing about bringing down hot sources is that it reveals Mirror's Edge's whites are not always white. Sunlit concrete and the resulting overexposed surfaces can carry a slight yellow warmth (the sun colour in the editor is usually set to bleach white) that only really shows up once the highlight clipping is fixed. While there's nothing technically wrong about this, it can look a little odd against the cool blue colour grading feel that some of the maps go for. To keep the expected look of neutral white highlights, Faithful Luma takes a creative decision here and looks for pixels that are both bright and close to neutral, then blends those pixels toward their own luminance.
 
 ![White Correction - Before/After](3A_Whites.webp)
-_FaithfulLuma before and after white correction_
+_Faithful Luma before and after white correction_
 
 ### Black floor
 
@@ -59,10 +59,10 @@ The other display space fix lives at the bottom end. The rendering path can writ
 ![Black Floor - Before](BlackFloor_Before.webp)
 _Original - note the "min" value_
 
-FaithfulLuma corrects that floor just before the final 8-bit output and simply remaps the measured floor to true black, then rolls off quickly until the image is unchanged again by the lower midtones. Near-black colour relationships are preserved by scaling the pixel around its luminance rather than clipping each channel on its own.
+Faithful Luma corrects that floor just before the final 8-bit output and simply remaps the measured floor to true black, then rolls off quickly until the image is unchanged again by the lower midtones. Near-black colour relationships are preserved by scaling the pixel around its luminance rather than clipping each channel on its own.
 
 ![Black Floor - After](BlackFloor_After.webp)
-_FaithfulLuma - note the "min" value_
+_Faithful Luma - note the "min" value_
 
 ### Auto exposure
 
@@ -71,14 +71,14 @@ The new model is a plain linear key. Target exposure is inversely proportional t
 The additional behaviour ontop of that is adaptation that is responsive and feels the same at any frame rate. The engine never hands the shader a frame time directly, but it does pass adaptation limits that were already scaled by frame time, so the shader divides that scaling back out and rebuilds adaptation as true per second rates. Levels that ask for faster or slower adaptation still get it, scaled proportionally.
 
 ![Auto Exposure - Before/After](AutoExposure.webp)
-_Original and FaithfulLuma_
+_Original and Faithful Luma_
 
 ### Bloom
 
 Two checks decide what actually gets to glow. Saturated colours that are not genuinely bright get held back by comparing the pixel's luminance against its strongest channel. Hot sources get the opposite treatment - extra scatter weight that grows as they approach the HDR ceiling, up to double at the very top. Either way, the bloom keeps the source's own colour rather than washing it toward white.
 
 ![Bloom - Before/After](Bloom.webp)
-_Original and FaithfulLuma_
+_Original and Faithful Luma_
 
 ## Visual comparisons
 
